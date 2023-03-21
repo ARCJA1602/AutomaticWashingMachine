@@ -1,0 +1,35 @@
+// Code your testbench here
+module automatic_washing_machine_tb;
+  reg clk,rst,start,door_close,water_level,detergent,wash_time,drain_time,spin_time;
+  
+  wire process,fill_valve,det_tray,motor,drain_valve,spin_blade;
+  
+  wire [2:0] pr_state,next_state;
+  
+  automatic_washing_machine dut (clk,rst,pr_state,next_state,start,door_close,process,water_level,fill_valve,detergent,det_tray,wash_time,motor,drain_time,drain_valve,spin_time,spin_blade);
+  
+  initial begin
+    clk=0;
+    forever #1 clk=~clk;
+  end
+  
+  initial begin
+    rst=1;
+    #5 rst=0;
+    #5 start=1;door_close=1;
+    #5 water_level=1;
+    #5 detergent=1;
+    #5 wash_time=1;
+    #5 drain_time=1;
+    #5 spin_time=1;water_level=0;
+    #5 water_level=1;wash_time=0;
+    #5 wash_time=1;drain_time=0;
+    #5 drain_time=1;spin_time=0;
+    #5 spin_time=1;start=0;door_close=0;rst=1;
+    #5 $finish;
+  end
+  
+  initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars(0,clk,rst,process,fill_valve,det_tray,motor,drain_valve,spin_blade,pr_state,next_state);
+  end
