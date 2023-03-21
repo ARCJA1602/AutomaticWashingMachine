@@ -1,0 +1,185 @@
+// Code your design here
+module automatic_washing_machine (clk,rst,pr_state,next_state,start,door_close,process,water_level,fill_valve,detergent,det_tray,wash_time,motor,drain_time,drain_valve,spin_time,spin_blade);
+  
+  input clk,rst,start,door_close,water_level,detergent,wash_time,drain_time,spin_time;
+  
+  output reg process,fill_valve,det_tray,motor,drain_valve,spin_blade;
+  
+  output reg [2:0] pr_state,next_state;
+  
+  parameter check_door = 3'b000;
+  parameter fill_water = 3'b001;
+  parameter add_detergent = 3'b010;
+  parameter wash_cycle = 3'b011;
+  parameter drain = 3'b100;
+  parameter spin = 3'b101;
+  
+  always @(posedge clk)
+    begin
+      if (rst)
+        begin
+          pr_state = check_door;
+          process = 0;
+        end
+      else
+        pr_state<=next_state;
+    end
+  
+  always @(pr_state,door_close,water_level,detergent,wash_time,drain_time,spin_time)
+    begin
+      case (pr_state)
+        
+        check_door:
+          if (start==1 && door_close==1)
+            begin
+              next_state = fill_water;
+              process = 1;
+              fill_valve=0;
+              det_tray=0;
+              motor=0;
+              drain_valve=0;
+              spin_blade=0;
+            end
+        else
+          begin
+            next_state = check_door;
+            process=0;
+            fill_valve=0;
+            det_tray=0;
+            motor=0;
+            drain_valve=0;
+            spin_blade=0;
+          end
+        
+        
+        fill_water:
+          if (water_level==1)
+            begin
+              next_state = add_detergent;
+              process = 1;
+              fill_valve=0;
+              det_tray=0;
+              motor=0;
+              drain_valve=0;
+              spin_blade=0;
+            end
+        else
+          begin
+            next_state = fill_water;
+            process = 1;
+            fill_valve = 1;
+            det_tray=0;
+            motor=0;
+            drain_valve=0;
+            spin_blade=0;
+          end
+        
+        
+        add_detergent:
+          if (detergent==1)
+            begin
+              next_state = wash_cycle;
+              process = 1;
+              fill_valve=0;
+              det_tray=0;
+              motor=0;
+              drain_valve=0;
+              spin_blade=0;
+            end
+        else
+          begin
+            next_state = add_detergent;
+            process = 1;
+            fill_valve=0;
+            det_tray = 1;
+            motor=0;
+            drain_valve=0;
+            spin_blade=0;
+          end
+        
+                
+        wash_cycle:
+          if (wash_time==1)
+            begin
+              next_state = drain;
+              process = 1;
+              fill_valve=0;
+              det_tray=0;
+              motor=0;
+              drain_valve=0;
+              spin_blade=0;
+            end
+        else
+          begin
+            next_state = wash_cycle;
+            process = 1;
+            fill_valve=0;
+            det_tray =0;
+            motor = 1;
+            drain_valve=0;
+            spin_blade=0;
+          end
+        
+                
+        drain:
+          if (drain_time==1)
+            begin
+              next_state = spin;
+              process = 1;
+              fill_valve=0;
+              det_tray=0;
+              motor=0;
+              drain_valve=0;
+              spin_blade=0;
+            end
+        else
+          begin
+            next_state = drain;
+            process = 1;
+            fill_valve=0;
+            det_tray =0;
+            motor=0;
+            drain_valve = 1;
+            spin_blade=0;
+          end
+        
+                
+        spin:
+          if (spin_time==1 && start==1)
+            begin
+              next_state = fill_water;
+              process = 1;
+              fill_valve=0;
+              det_tray=0;
+              motor=0;
+              drain_valve=0;
+              spin_blade=0;
+            end
+        else if (spin_time==1 && start==0)
+            begin
+              next_state = fill_water;
+              process =0;
+              fill_valve=0;
+              det_tray=0;
+              motor=0;
+              drain_valve=0;
+              spin_blade=0;
+            end
+        else 
+          begin
+            next_state = spin;
+            process = 1;
+            fill_valve=0;
+            det_tray =0;
+            motor=0;
+            drain_valve=0;
+            spin_blade = 1;
+          end
+        default:
+          begin
+            next_state=check_door;
+            process=0;
+          end
+      endcase
+    end
+endmodule 
