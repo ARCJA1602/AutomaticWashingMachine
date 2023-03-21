@@ -33,3 +33,4 @@ module automatic_washing_machine_tb;
     $dumpfile("dump.vcd");
     $dumpvars(0,clk,rst,process,fill_valve,det_tray,motor,drain_valve,spin_blade,pr_state,next_state);
   end
+endmodule
